@@ -1,4 +1,4 @@
-# Smart-brain
+# Smart-brain 🧠
 Is a full stack App with its own server.
 The app has a fully working registration and sign in function.
 Smart-brain takes users pictures from url that they insert. After that the app displays a picture with border around a human face.
