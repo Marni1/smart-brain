@@ -27,7 +27,7 @@ const particlesLoaded = (container) => {
   console.log(container);
 };
 const poptions = {
-  
+
   particles: {
     color: {
       value: "#ffffff",
@@ -61,7 +61,7 @@ const poptions = {
     },
     opacity: {
       value: 0.5,
-      
+
     },
     shape: {
       type: "circle",
@@ -73,7 +73,7 @@ const poptions = {
   },
   detectRetina: true,
 }
-  
+
 const initialState = {
   input: '',
   imageUrl: '',
@@ -82,7 +82,7 @@ const initialState = {
   isSignedIn: false,
   user: {
     id: '',
-    name:'',
+    name: '',
     email: '',
     entries: 0,
     joined: ''
@@ -93,19 +93,21 @@ class App extends Component {
   constructor() {
     super();
     this.state = initialState
-    
+
   }
 
 
 
   loadUser = (data) => {
-    this.setState({user: {
-      id: data.id,
-      name:data.name,
-      email: data.email,
-      entries: data.entries,
-      joined: data.joined
-    }})
+    this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    })
 
   }
 
@@ -124,92 +126,94 @@ class App extends Component {
   }
   displayFaceBox = (box) => {
     console.log(box);
-    this.setState({box: box})
+    this.setState({ box: box })
   }
-  
+
   onInputChange = (event) => {
-    this.setState({input: event.target.value})
+    this.setState({ input: event.target.value })
   }
   onButtonSubmit = () => {
-    this.setState({imageUrl: this.state.input});
-    fetch(`https://still-badlands-71293.herokuapp.com/imageurl`, {
+    this.setState({ imageUrl: this.state.input });
+    fetch(`https://smback.onrender.com/imageurl`, {
       method: 'post',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        input: this.state.input   
-})
-})
-.then(response => response.json())
-      .then(response => {
-        if(response){
-          fetch(`https://still-badlands-71293.herokuapp.com/image`, {
-            method: 'put',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              id: this.state.user.id,
-              
+        input: this.state.input
       })
     })
-      .then(response=> response.json())
-      .then(count =>  {
-        this.setState(Object.assign(this.state.user, { entries: count}))
-        })
-      .catch(console.log)
-      }
+      .then(response => response.json())
+      .then(response => {
+        if (response) {
+          fetch(`https://smback.onrender.com/image`, {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: this.state.user.id,
+
+            })
+          })
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, { entries: count }))
+            })
+            .catch(console.log)
+        }
         this.displayFaceBox(this.calculateFaceLocation(response))
-    })
-    
-      
-        .catch(err => console.log(err));
+      })
+
+
+      .catch(err => console.log(err));
   }
   onRouteChange = (route) => {
-  if (route === 'signout') {
-    this.setState(initialState)
-  } else if (route==='home') {
-    this.setState({isSignedIn: true})
-    
+    if (route === 'signout') {
+      this.setState(initialState)
+    } else if (route === 'home') {
+      this.setState({ isSignedIn: true })
+
+    }
+    this.setState({ route: route })
   }
-  this.setState({route: route})
-  }
 
 
- 
-render(){
- const {isSignedIn, imageUrl, route, box} = this.state;
- 
 
-  return (
-    <div className="App">
-      <Particles
-      className='tsparticles'
-      id="tsparticles"
-      init={particlesInit}
-      loaded={particlesLoaded}
-      options={poptions}
-    />
-      <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-      { route ==='home'
-      ?<div>
-        <Logo />
-        <Rank userName={this.state.user.name} userEntries={this.state.user.entries}/>
-        <ImageLinkForm 
-        onInputChange={this.onInputChange}
-        onButtonSubmit={this.onButtonSubmit}/>
-        <FaceR 
-        box={box} 
-        imageUrl={imageUrl}/>
-       </div>
-      
-      :(
-        route === 'signin'
-      
-      ?<Signin  loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
-      :<Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
-     
-      )
-      }
-    </div>
-  );
+  render() {
+    const { isSignedIn, imageUrl, route, box } = this.state;
+    const { loadUser, onRouteChange } = this
+
+
+    return (
+      <div className="App">
+        <Particles
+          className='tsparticles'
+          id="tsparticles"
+          init={particlesInit}
+          loaded={particlesLoaded}
+          options={poptions}
+        />
+        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
+        {route === 'home'
+          ? <div>
+            <Logo />
+            <Rank userName={this.state.user.name} userEntries={this.state.user.entries} />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit} />
+            <FaceR
+              box={box}
+              imageUrl={imageUrl} />
+          </div>
+
+          : (
+            route === 'signin'
+
+              ? <Signin loadUser={loadUser} onRouteChange={onRouteChange} />
+              : <Register loadUser={loadUser} onRouteChange={onRouteChange} />
+
+          )
+
+        }
+      </div>
+    );
   }
 }
 export default App;
